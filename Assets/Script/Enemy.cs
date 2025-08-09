@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class Enemy : GridMover
 {
-    private Vector2Int enemyPosition;
+    public Vector2Int enemyPosition;
 
     protected override void Start()
     {
