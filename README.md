@@ -30,6 +30,7 @@ This Unity project demonstrates grid-based movement for a player and an enemy, i
      - `positionText`: UI Text element for displaying coordinates.
      - `obstacleData`: Reference to your `ObstacleData` asset.
      - `player` and `enemy`: References to the respective GameObjects.
+(if not already done)
 
 2. **Running:**
    - Hover the mouse over grid tiles to see their coordinates.
