@@ -8,12 +8,20 @@ public class Enemy : MonoBehaviour
     public ObstacleData obstacleData;
     public int gridWidth = 10;
     public int gridHeight = 10;
+    private bool isMoving = false;
+    private Animator animator;
 
     private Vector2Int enemyPosition;
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         enemyPosition = WorldToGrid(transform.position);
+    }
+
+    private void Update()
+    {
+        animator.SetBool("isMoving", isMoving);
     }
 
     public void MoveToNearestNeighbor(Vector2Int clickedTile)
@@ -60,9 +68,25 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator FollowPath(List<Vector2Int> path)
     {
+        isMoving = true;
+
         foreach (Vector2Int tile in path)
         {
             Vector3 targetPosition = new Vector3(tile.x, transform.position.y, tile.y);
+
+            // Calculate direction and rotate player
+            Vector3 direction = (targetPosition - transform.position).normalized;
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+                while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
+                {
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
+                    yield return null;
+                }
+                transform.rotation = targetRotation;
+            }
 
             while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
             {
@@ -73,6 +97,8 @@ public class Enemy : MonoBehaviour
             // Snap to the exact position to avoid small discrepancies
             transform.position = targetPosition;
         }
+
+        isMoving = false;
     }
 
     private List<Vector2Int> FindPath(Vector2Int start, Vector2Int target)

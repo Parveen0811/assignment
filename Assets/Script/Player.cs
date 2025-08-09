@@ -8,10 +8,23 @@ public class Player : MonoBehaviour
     public ObstacleData obstacleData; 
     public int gridWidth = 10;
     public int gridHeight = 10; 
+    public bool isMoving = false;
+    public Animator animator;
 
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
     
+    private void Update()
+    {
+        animator.SetBool("isMoving", isMoving);
+    }
+
     public void MoveTo(Vector2Int targetCoords)
     {
+        if (isMoving) return;
+
         // Generate the path using A* algorithm
         List<Vector2Int> path = FindPath(new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.z)), targetCoords);
 
@@ -30,9 +43,25 @@ public class Player : MonoBehaviour
     // Coroutine to follow the path
     private IEnumerator FollowPath(List<Vector2Int> path)
     {
+        isMoving = true;
+
         foreach (Vector2Int tile in path)
         {
             Vector3 targetPosition = new Vector3(tile.x, transform.position.y, tile.y);
+
+            // Calculate direction and rotate player
+            Vector3 direction = (targetPosition - transform.position).normalized;
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                
+                while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
+                {
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
+                    yield return null;
+                }
+                transform.rotation = targetRotation;
+            }
 
             while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
             {
@@ -43,6 +72,8 @@ public class Player : MonoBehaviour
             // Snap to the exact position to avoid small discrepancies
             transform.position = targetPosition;
         }
+        
+        isMoving = false;
     }
 
     // A* Pathfinding Algorithm

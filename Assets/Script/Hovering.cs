@@ -1,10 +1,11 @@
 using UnityEngine;
-using TMPro;
+using UnityEngine.UI;
+
 
 public class Hovering : MonoBehaviour
 {
     public LayerMask tileLayer;
-    public TMP_Text positionText;
+    public Text positionText;
     public ObstacleData obstacleData;
     public Player player;
     public Enemy enemy;
@@ -23,12 +24,12 @@ public class Hovering : MonoBehaviour
                 positionText.text = $"X: {tile.x}, Y: {tile.y}";
 
                 // Check for mouse click
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) )
                 {
                     Vector2Int tileCoords = new Vector2Int(tile.x, tile.y);
 
                     // Check if the tile is walkable
-                    if (obstacleData.IsTileWalkable(tileCoords))
+                    if (obstacleData.IsTileWalkable(tileCoords) && !player.isMoving)
                     {
                         player.MoveTo(tileCoords);
                         enemy.MoveToNearestNeighbor(tileCoords);
