@@ -29,7 +29,7 @@ public class Hovering : MonoBehaviour
                     Vector2Int tileCoords = new Vector2Int(tile.x, tile.y);
 
                     // Check if the tile is walkable
-                    if (obstacleData.IsTileWalkable(tileCoords) && !player.isMoving)
+                    if (obstacleData.IsTileWalkable(tileCoords) && !player.isMoving && !enemy.isMoving)
                     {
                         player.MoveTo(tileCoords, enemy.enemyPosition);
                         enemy.MoveToNearestNeighbor(tileCoords);

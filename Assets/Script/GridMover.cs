@@ -8,52 +8,6 @@ public abstract class GridMover : MonoBehaviour
     public ObstacleData obstacleData;
     public int gridWidth = 10;
     public int gridHeight = 10;
-    public bool isMoving = false;
-    protected Animator animator;
-
-    protected virtual void Start()
-    {
-        animator = GetComponent<Animator>();
-    }
-
-    protected virtual void Update()
-    {
-        if (animator != null)
-            animator.SetBool("isMoving", isMoving);
-    }
-
-    protected IEnumerator FollowPath(List<Vector2Int> path)
-    {
-        isMoving = true;
-
-        foreach (Vector2Int tile in path)
-        {
-            Vector3 targetPosition = new Vector3(tile.x, transform.position.y, tile.y);
-
-            Vector3 direction = (targetPosition - transform.position).normalized;
-            if (direction != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(direction);
-
-                while (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
-                {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 10f * Time.deltaTime);
-                    yield return null;
-                }
-                transform.rotation = targetRotation;
-            }
-
-            while (Vector3.Distance(transform.position, targetPosition) > 0.01f)
-            {
-                transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
-                yield return null;
-            }
-
-            transform.position = targetPosition;
-        }
-
-        isMoving = false;
-    }
 
     protected List<Vector2Int> FindPath(Vector2Int start, Vector2Int target)
     {
